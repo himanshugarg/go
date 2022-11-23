@@ -18,18 +18,16 @@ func main() {
 			log.Fatal(err)
 		}
 		defer conn.Close()
-		var prefixWriter PrefixWriter = loc.(string)
-		mustCopy(prefixWriter, conn)
+		prefixWriter := PrefixWriter(loc)
+		mustCopy(&prefixWriter, conn)
 	}
 }
 
 type PrefixWriter string
 
 func (prefix *PrefixWriter) Write(p []byte) (int, error) {
-	return fmt.Fprintf(os.Stdout, "%s: %s", prefix, string(p))
+	return fmt.Fprintf(os.Stdout, "%s: %s", *prefix, string(p))
 }
-
-
 
 func mustCopy(dst io.Writer, src io.Reader) {
 	if _, err := io.Copy(dst, src); err != nil {
