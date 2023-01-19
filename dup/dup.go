@@ -8,8 +8,7 @@ import (
 )
 
 func main() {
-	counts := make(map[string]int)
-	files := make(map[string]map[string]bool)
+	filesContaining := make(map[string][]string)
 
 	for _, filename := range os.Args[1:] {
 		data, err := ioutil.ReadFile(filename)
@@ -18,20 +17,17 @@ func main() {
 			continue
 		}
 		for _, line := range strings.Split(string(data), "\n") {
-			counts[line]++
-			if files[line] == nil {
-				files[line] = make(map[string]bool)
-			}
-			files[line][filename] = true
+			filesContaining[line] = append(filesContaining[line], filename)
 		}
 	}
 
-	for line, n := range counts {
-		if n > 1 {
-			fmt.Printf("%d\t%s\n", n, line)
-			for file, _ := range files[line] {
+	for line, files := range filesContaining {
+		if len(files) > 1 {
+			fmt.Printf("%d\t%s:\n", len(files), line)
+			for _, file := range files {
 				fmt.Printf("%s ", file);
 			}
+			fmt.Println()
 		}
 	}
 }
